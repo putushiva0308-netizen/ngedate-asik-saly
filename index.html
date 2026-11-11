@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Date Planner 💗</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffe4ec, #fce7f3, #fff1f2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #563344;
+}
+
+.container {
+    background: rgba(255,255,255,0.9);
+    width: 100%;
+    max-width: 430px;
+    padding: 35px 25px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 10px 40px #d88ca733;
+}
+
+.heart {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 25px;
+    margin-bottom: 12px;
+}
+
+p {
+    font-size: 14px;
+    color: #987487;
+    margin-bottom: 25px;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 13px 25px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.yes {
+    background: #ed82aa;
+    color: white;
+}
+
+.yes:hover {
+    background: #db6392;
+    transform: scale(1.05);
+}
+
+.no {
+    background: #eeeeee;
+    color: #666;
+}
+
+.button-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    min-height: 65px;
+    position: relative;
+}
+
+#planner {
+    display: none;
+    text-align: left;
+}
+
+#planner h1, #planner p {
+    text-align: center;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 17px 0 7px;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #f0c4d5;
+    border-radius: 10px;
+    outline: none;
+    background: #fff9fb;
+    color: #563344;
+    font-size: 14px;
+}
+
+input:focus, select:focus {
+    border-color: #ed82aa;
+}
+
+.submit {
+    width: 100%;
+    margin-top: 25px;
+    background: #ed82aa;
+    color: white;
+}
+
+#result {
+    display: none;
+    margin-top: 22px;
+    padding: 18px;
+    background: #fff0f5;
+    border-radius: 15px;
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+.whatsapp {
+    width: 100%;
+    margin-top: 15px;
+    background: #25D366;
+    color: white;
+}
+
+.back {
+    background: transparent;
+    color: #987487;
+    margin-top: 12px;
+    width: 100%;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HALAMAN AWAL -->
+    <section id="welcome">
+
+        <div class="heart">💗</div>
+
+        <h1>Would You Go On A Date With Me?</h1>
+
+        <p>
+            I have something special planned for us.
+            So... what do you say? 🥺
+        </p>
+
+        <div class="button-area" id="buttonArea">
+            <button class="yes" onclick="showPlanner()">
+                YES! 💗
+            </button>
+
+            <button class="no" id="noButton">
+                NO
+            </button>
+        </div>
+
+    </section>
+
+
+    <!-- HALAMAN DATE PLANNER -->
+    <section id="planner">
+
+        <div class="heart">🌷</div>
+
+        <h1>Let's Plan Our Date!</h1>
+
+        <p>Choose your perfect date with me.</p>
+
+        <form id="dateForm">
+
+            <label for="date">Date 📅</label>
+            <input type="date" id="date" required>
+
+            <label for="time">Time ⏰</label>
+            <input type="time" id="time" required>
+
+            <label for="place">Where should we go? 📍</label>
+
+            <select id="place" required>
+                <option value="">Choose a place</option>
+                <option value="Coffee Shop">Coffee Shop ☕</option>
+                <option value="Restaurant">Restaurant 🍽️</option>
+                <option value="Cinema">Cinema 🎬</option>
+                <option value="Mall">Mall 🛍️</option>
+                <option value="Beach">Beach 🌊</option>
+                <option value="Park">Park 🌳</option>
+                <option value="Surprise Me!">Surprise Me! 🎁</option>
+            </select>
+
+            <button type="submit" class="submit">
+                Confirm Our Date 💕
+            </button>
+
+        </form>
+
+        <!-- HASIL -->
+        <div id="result">
+
+            <h2>Our Date Details 💗</h2>
+
+            <p style="margin-top:12px; margin-bottom:12px;">
+                Looks like we have a date!
+            </p>
+
+            <div id="summary"></div>
+
+            <button class="whatsapp" onclick="sendWhatsApp()">
+                Send to WhatsApp 💬
+            </button>
+
+            <button class="back" onclick="editDate()">
+                Edit My Plan
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+// NOMOR WHATSAPP TUJUAN
+// Ganti dengan nomor WhatsApp kamu.
+// Gunakan kode negara, tanpa + atau angka 0 di depan.
+
+const whatsappNumber = "6281234567890";
+
+
+// TOMBOL NO KABUR
+const noButton = document.getElementById("noButton");
+const buttonArea = document.getElementById("buttonArea");
+
+function moveNoButton() {
+
+    const area = buttonArea.getBoundingClientRect();
+
+    const maxX = area.width - noButton.offsetWidth;
+    const maxY = area.height - noButton.offsetHeight;
+
+    const x = Math.max(0, Math.random() * maxX);
+    const y = Math.max(0, Math.random() * maxY);
+
+    noButton.style.position = "absolute";
+    noButton.style.left = x + "px";
+    noButton.style.top = y + "px";
+}
+
+noButton.addEventListener("mouseenter", moveNoButton);
+noButton.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+    moveNoButton();
+});
+noButton.addEventListener("click", function(e) {
+    e.preventDefault();
+    moveNoButton();
+});
+
+
+// PINDAH KE PLANNER
+function showPlanner() {
+
+    document.getElementById("welcome").style.display = "none";
+    document.getElementById("planner").style.display = "block";
+
+}
+
+
+// BATAS TANGGAL MINIMAL HARI INI
+const dateInput = document.getElementById("date");
+
+const today = new Date();
+const localDate = new Date(
+    today.getTime() - today.getTimezoneOffset() * 60000
+).toISOString().split("T")[0];
+
+dateInput.min = localDate;
+
+
+// SIMPAN DATA DATE
+let dateDetails = {};
+
+document.getElementById("dateForm").addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+    const place = document.getElementById("place").value;
+
+    const formattedDate = new Date(date + "T00:00:00")
+        .toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+    dateDetails = {
+        date: formattedDate,
+        time: time,
+        place: place
+    };
+
+    document.getElementById("summary").innerHTML = `
+        <strong>📅 Date:</strong> ${formattedDate}<br>
+        <strong>⏰ Time:</strong> ${time}<br>
+        <strong>📍 Place:</strong> ${place}
+    `;
+
+    document.getElementById("result").style.display = "block";
+
+});
+
+
+// KIRIM KE WHATSAPP
+function sendWhatsApp() {
+
+    const message =
+`💗 OUR DATE PLANNER 💗
+
+Hey! Here's our date plan:
+
+📅 Date: ${dateDetails.date}
+⏰ Time: ${dateDetails.time}
+📍 Place: ${dateDetails.place}
+
+Can't wait to see you! 🥰`;
+
+    const url = "https://wa.me/6287860381872"
+        "?text=" + encodeURIComponent(message);
+
+    window.open(url, "_blank");
+
+}
+
+
+// EDIT RENCANA
+function editDate() {
+
+    document.getElementById("result").style.display = "none";
+
+}
+
+</script>
+
+</body>
+</html>
